@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <script type="text/javascript">
+        window.callbackId = 0;
+        function innerCallHandler(method, arg, cb) {
+
+            var cbName = 'CALLBACK' + window.callbackId++;
+            let callbackFunction = function() {};
+
+            window[cbName] = cb;
+            var args = {
+                data: arg === undefined ? null : JSON.stringify(arg),
+                callback: cbName
+            };
+
+            if (window.JavaScriptBridge) {
+                window.JavaScriptBridge.callHandler(method, JSON.stringify(args));
+            }
+        }
+
+        function handleClick(message) {
+            innerCallHandler(
+                'showToast',
+                { msg: message},
+                function(res) {
+                    alert(res.result);
+                    return "JavaScript 回调函数 执行结果"
+                }
+            );
+        }
+    </script>
+</head>
+<body>
+<button onclick="handleClick('The message is from JS!')">JS 调用 Android</button>
+</body>
+</html>
